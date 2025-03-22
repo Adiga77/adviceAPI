@@ -1,142 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Advice Generator</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            color: #2d3748;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        
-        .container {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
-            transition: transform 0.3s ease;
-        }
-        
-        .container:hover {
-            transform: translateY(-5px);
-        }
-        
-        h1 {
-            color: #4a5568;
-            margin-bottom: 2rem;
-        }
-        
-        .advice {
-            font-size: 1.5rem;
-            line-height: 1.6;
-            font-weight: 300;
-            font-style: italic;
-            color: #2d3748;
-            margin-bottom: 2rem;
-            min-height: 5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .advice::before, .advice::after {
-            content: '"';
-            font-size: 2rem;
-            color: #4299e1;
-        }
-        
-        button {
-            background-color: #4299e1;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 0.8rem 1.8rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            margin-bottom: 1.5rem;
-        }
-        
-        button:hover {
-            background-color: #3182ce;
-            transform: scale(1.05);
-        }
-        
-        button:active {
-            transform: scale(0.98);
-        }
-        
-        .message {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-        
-        .loading {
-            opacity: 0.7;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: #2d3748;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        flex-direction: column;
+      }
+
+      .container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        text-align: center;
+        max-width: 600px;
+        width: 90%;
+        transition: transform 0.3s ease;
+        margin-bottom: 1rem;
+      }
+
+      .container:hover {
+        transform: translateY(-5px);
+      }
+
+      h1 {
+        color: #4a5568;
+        margin-bottom: 2rem;
+      }
+
+      .advice {
+        font-size: 1.5rem;
+        line-height: 1.6;
+        font-weight: 300;
+        font-style: italic;
+        color: #2d3748;
+        margin-bottom: 2rem;
+        min-height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .advice::before,
+      .advice::after {
+        content: '"';
+        font-size: 2rem;
+        color: #4299e1;
+      }
+
+      button {
+        background-color: #4299e1;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 0.8rem 1.8rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+        margin-bottom: 1.5rem;
+      }
+
+      button:hover {
+        background-color: #3182ce;
+        transform: scale(1.05);
+      }
+
+      button:active {
+        transform: scale(0.98);
+      }
+
+      .message {
+        color: #718096;
+        font-size: 0.9rem;
+      }
+
+      .loading {
+        opacity: 0.7;
+      }
+
+      .footer {
+        text-align: center;
+        color: #718096;
+        font-size: 0.85rem;
+        margin-top: 1rem;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>Daily Wisdom</h1>
-        <div id="advice" class="advice">Loading advice...</div>
-        <button id="adviceButton">Get New Advice</button>
-        <div id="message" class="message">You have clicked 0 times for advice</div>
+      <h1>Daily Wisdom</h1>
+      <div id="advice" class="advice">Loading advice...</div>
+      <button id="adviceButton">Get New Advice</button>
+      <div id="message" class="message">
+        You have clicked 0 times for advice
+      </div>
     </div>
+    <div class="footer">&copy; 2025 Adokwu Michael project</div>
 
     <script>
-        // Initialize variables
-        let count = 0;
-        const adviceElement = document.getElementById('advice');
-        const messageElement = document.getElementById('message');
-        const adviceButton = document.getElementById('adviceButton');
-        
-        // Function to fetch advice
-        async function getAdvice() {
-            try {
-                // Show loading state
-                adviceElement.textContent = 'Loading advice...';
-                adviceElement.classList.add('loading');
-                
-                // Fetch data from API
-                const response = await fetch('https://api.adviceslip.com/advice');
-                const data = await response.json();
-                
-                // Update advice text
-                adviceElement.textContent = data.slip.advice;
-                adviceElement.classList.remove('loading');
-                
-                // Update count
-                count++;
-                updateMessage();
-            } catch (error) {
-                adviceElement.textContent = 'Failed to load advice. Please try again.';
-                adviceElement.classList.remove('loading');
-                console.error('Error fetching advice:', error);
-            }
+      // Initialize variables
+      let count = 0;
+      const adviceElement = document.getElementById("advice");
+      const messageElement = document.getElementById("message");
+      const adviceButton = document.getElementById("adviceButton");
+
+      // Function to fetch advice
+      async function getAdvice() {
+        try {
+          // Show loading state
+          adviceElement.textContent = "Loading advice...";
+          adviceElement.classList.add("loading");
+
+          // Fetch data from API
+          const response = await fetch("https://api.adviceslip.com/advice");
+          const data = await response.json();
+
+          // Update advice text
+          adviceElement.textContent = data.slip.advice;
+          adviceElement.classList.remove("loading");
+
+          // Update count
+          count++;
+          updateMessage();
+        } catch (error) {
+          adviceElement.textContent =
+            "Failed to load advice. Please try again.";
+          adviceElement.classList.remove("loading");
+          console.error("Error fetching advice:", error);
         }
-        
-        // Function to update message
-        function updateMessage() {
-            messageElement.textContent = `You have clicked ${count} ${count === 1 ? 'time' : 'times'} for advice`;
-        }
-        
-        // Add event listener to button
-        adviceButton.addEventListener('click', getAdvice);
-        
-        // Initial advice load
-        getAdvice();
+      }
+
+      // Function to update message
+      function updateMessage() {
+        messageElement.textContent = `You have clicked ${count} ${
+          count === 1 ? "time" : "times"
+        } for advice`;
+      }
+
+      // Add event listener to button
+      adviceButton.addEventListener("click", getAdvice);
+
+      // Initial advice load
+      getAdvice();
     </script>
-</body>
+  </body>
 </html>
