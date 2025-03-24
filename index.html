@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Advice Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -12,9 +13,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
         margin: 0;
         flex-direction: column;
+        padding: 2rem 0;
       }
 
       .container {
@@ -33,7 +35,7 @@
         transform: translateY(-5px);
       }
 
-      h1 {
+      h1, h2 {
         color: #4a5568;
         margin-bottom: 2rem;
       }
@@ -95,18 +97,78 @@
         font-size: 0.85rem;
         margin-top: 1rem;
       }
+
+      /* QR Code specific styling */
+      .qr-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        text-align: center;
+        max-width: 600px;
+        width: 90%;
+        transition: transform 0.3s ease;
+        margin-top: 2rem;
+      }
+
+      .qr-container:hover {
+        transform: translateY(-5px);
+      }
+
+      #qrcode {
+        display: inline-block;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        margin: 0 auto;
+      }
+
+      .qr-text {
+        color: #128C7E;
+        margin-top: 1rem;
+        font-size: 1rem;
+      }
+
+      /* Responsive layout */
+      @media (min-width: 768px) {
+        .content-wrapper {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          justify-content: center;
+          gap: 2rem;
+          width: 90%;
+          max-width: 1200px;
+        }
+        
+        .container, .qr-container {
+          margin: 0;
+          flex: 1;
+        }
+      }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Daily Wisdom</h1>
-      <div id="advice" class="advice">Loading advice...</div>
-      <button id="adviceButton">Get New Advice</button>
-      <div id="message" class="message">
-        You have clicked 0 times for advice
+    <div class="content-wrapper">
+      <div class="container">
+        <h1>Daily Wisdom</h1>
+        <div id="advice" class="advice">Loading advice...</div>
+        <button id="adviceButton">Get New Advice</button>
+        <div id="message" class="message">
+          You have clicked 0 times for advice
+        </div>
+      </div>
+
+      <div class="qr-container">
+        <h2>Contact Me</h2>
+        <div id="qrcode"></div>
+        <p class="qr-text">Scan to message on WhatsApp</p>
       </div>
     </div>
-    <div class="footer">&copy; 2025 Adokwu Michael Adiga's project</div>
+
+    <div class="footer">
+      Project By &copy; 2025 Adokwu Michael Adiga | All rights reserved
+    </div>
 
     <script>
       // Initialize variables
@@ -148,11 +210,36 @@
         } for advice`;
       }
 
+      // Generate QR Code for WhatsApp
+      function generateQRCode() {
+        // Format the phone number (remove spaces, make sure it includes country code)
+        const phoneNumber = '07048683054';
+        // Assuming Nigerian number (+234), adjust if different country code
+        const formattedNumber = phoneNumber.startsWith('0') ? 
+          '234' + phoneNumber.substring(1) : phoneNumber;
+        
+        // Create WhatsApp link
+        const whatsappLink = `https://wa.me/${formattedNumber}`;
+        
+        // Generate QR code
+        new QRCode(document.getElementById('qrcode'), {
+          text: whatsappLink,
+          width: 150,
+          height: 150,
+          colorDark: '#128C7E', // WhatsApp green
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+
       // Add event listener to button
       adviceButton.addEventListener("click", getAdvice);
 
       // Initial advice load
       getAdvice();
+      
+      // Generate QR code when page loads
+      document.addEventListener('DOMContentLoaded', generateQRCode);
     </script>
   </body>
 </html>
